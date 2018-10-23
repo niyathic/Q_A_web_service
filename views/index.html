@@ -1,24 +1,64 @@
 <html>
   <head>
     <title>cis197 piazza lite</title>
+    <!-- new  stuff -->
+    <script src="/static/scripts/lib/jquery.min.js"></script>
+    <script src="/static/scripts/main.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/styles/styles.css"/>
+    
   </head>
   <body>
-    <% if (user) { %>
-    <h1>HAY THERE <%= user %> MY BOI </h1>
-    <form method="POST">
-      Question: <br/>
-      <input type="text" name="question">
-      <br/>
-      <button type="submit">Add question</button>
-    </form>
-    <% } %>
-    <a href="/account/signup">Sign up</a> for an account and a right ol good time ORRR
-    <a href="/account/login">log in</a> to submit a question
-    <ul>
-        <% for (q in questions) { %>
-          <li><%= questions[q].questionText %></li>
-        <% } %>
-    </ul>
-    <a href="/account/logout">Log out</a>...good riddance!
+    <div class="nav">
+      <h2>Piazza Lite</h2>
+      <% if (user) { %>
+      <p>Hi <%= user %> | 
+      <a href="/account/logout">Log out</a>
+      </p>
+      <% } %>
+    </div>
+    <div class="main-body">
+      <div class="left-col">
+      <% if (user) { %> <!-- I.e. show the following if someone is logged in -->
+        <!-- relevant part -->
+      <a href="#" class="btn" id="new-question">Add new Question + </a>
+      <!-- modal for adding new question -->
+      <div class="modal" style="display:none">
+        <div class="question-area">
+          <!-- this is the input box -->
+          <textarea type="text" id="question-text">
+          Add Question: 
+          </textarea>
+          <a class="btn" type="submit" id="submit-question">Submit Question</a>
+          <a class="btn" id="close-modal">Close</a>
+        </div>
+      </div>
+      <% } else { %>
+      <a class="btn" href="/account/login">Log in to submit a question</a>
+      <% } %>
+      <ul id="questions">
+        <% if (typeof questions == 'object') { %>
+          <% questions.forEach(function(q) { %>
+          <li data-qid=<%= q.id %>><%= q.questionText %></li>
+          <% }) 
+        } %>
+      </ul>
+      </div>
+          
+      <!-- where a question is displayed -->
+      <div class="right-col">
+        <div id="show-question" style="display:none">
+            <div id="question-info">
+              <p id="question"></p>
+              Author: <p id="author"></p>
+              Answer: <p id="answer-text"></p>
+            </div>
+            <br/><br/>
+            <% if (user) { %>
+            <textarea id="answer"></textarea>
+            <a class="btn" type="submit" id="submitAnswer">Submit Answer</a>
+            <% } %>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

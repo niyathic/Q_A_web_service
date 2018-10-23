@@ -3,11 +3,9 @@ var router = express.Router();
 var User = require('../models/user');
 var isAuthenticated = require('../middlewares/isAuthenticated')
 
-
 // Account routes under the '/account' route prefix. 
 // (i.e. login should be /account/login, signup = /account/signup, 
 // logout = /account/logout)
-
 
 // Signup
 router.get('/signup', function (req, res, next) {

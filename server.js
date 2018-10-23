@@ -1,17 +1,12 @@
-// TODO: Import various things...
-// - express
-// - path
-// - body-parser
-// - cookie-session
-// - mongoose
-// - various other file imports
 var express = require('express');
+var path = require('path');
 var bodyParser = require('body-parser');
 var Question = require('./models/question');
 var cookieSession = require('cookie-session');
-var accountRoutes = require('./routes/account')
-var isAuthenticated = require('./middlewares/isAuthenticated')
-var mongoose = require('mongoose')
+var accountRoutes = require('./routes/account');
+var apiRoutes = require('./routes/api');
+var isAuthenticated = require('./middlewares/isAuthenticated');
+var mongoose = require('mongoose');
 
 // instantiate express app...TODO: make sure that you have required express
 var app = express();
@@ -27,7 +22,13 @@ app.use(cookieSession({
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }))
 app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json()); // to accept post data from ajax requests
+
+app.use('/static', express.static(path.join(__dirname, 'static')));
+
+// set up account and api routes
 app.use('/account', accountRoutes);
+app.use('/api', apiRoutes);
 
 app.get('/', function (req, res, next) {
   // Render out an index.html page with questions (queried from db)
@@ -42,7 +43,7 @@ app.get('/', function (req, res, next) {
         next(err) // pass in error from db call
         return;
     }
-})
+  })
 });
 
 // Post route that will 
@@ -50,8 +51,9 @@ app.get('/', function (req, res, next) {
 //       b) add a new question to the db
 //       c) redirect the user back to the home page when done
 app.post('/', isAuthenticated, function (req, res, next) {
-  var q = req.body.question;
-  var dbQ = new Question({questionText: q});
+  var { questionText } = req.body; // ES6 shorthand
+  var author = req.session.user;
+  var dbQ = new Question({ questionText, author }) // ES6 shorthand
   dbQ.save(function (err, results) {
     if (!err) {
       res.redirect('/');
